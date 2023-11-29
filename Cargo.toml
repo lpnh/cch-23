@@ -2,6 +2,7 @@
 name = "cch23-lpnh"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 axum = "0.7.1"
@@ -9,3 +10,7 @@ shuttle-axum = { version = "0.34.1", default-features = false, features = ["axum
 shuttle-runtime = "0.34.1"
 tokio = { version = "1.34.0", features = ["full"] }
 tracing = "0.1.40"
+
+[dev-dependencies]
+http-body-util = "0.1.0"
+tower = "0.4.13"

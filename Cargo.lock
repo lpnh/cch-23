@@ -260,9 +260,11 @@ name = "cch23-lpnh"
 version = "0.1.0"
 dependencies = [
  "axum 0.7.1",
+ "http-body-util",
  "shuttle-axum",
  "shuttle-runtime",
  "tokio",
+ "tower",
  "tracing",
 ]
 
