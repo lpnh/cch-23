@@ -8,5 +8,5 @@ pub fn app() -> Router {
         .route("/", get(home))
         .route("/-1/error", get(fake_error))
         // Day 1
-        .route("/1/:num1/:num2", get(cube_the_bits))
+        .route("/1/*packets", get(cube_the_bits))
 }

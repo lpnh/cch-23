@@ -1,6 +1,7 @@
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::extract::Path;
+
+use crate::parser::ParsedPath;
 
 // Day -1
 pub async fn home() -> &'static str {
@@ -15,13 +16,12 @@ pub async fn fake_error() -> impl IntoResponse {
 }
 
 // Day 1
-pub async fn cube_the_bits(
-    Path((num1, num2)): Path<(u32, u32)>,
-) -> impl IntoResponse {
+pub async fn cube_the_bits(ParsedPath(packets): ParsedPath) -> impl IntoResponse {
     let status = StatusCode::OK;
 
-    let result = (num1 ^ num2).pow(3);
-    let body = result.to_string();
-
+    let xor_result = packets.iter().fold(0, |acc, &x| acc ^ x);
+    let cubed_result = xor_result.pow(3);
+    let body = cubed_result.to_string();
+    
     (status, body)
 }

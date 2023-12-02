@@ -8,6 +8,7 @@ use tower::ServiceExt;
 
 use cch23_lpnh::app;
 
+// Task 1
 #[tokio::test]
 async fn home() {
     let app = app();
@@ -23,6 +24,7 @@ async fn home() {
     assert_eq!(&body[..], b"ho ho ho!");
 }
 
+// Task 2
 #[tokio::test]
 async fn fake_error() {
     let app = app();
