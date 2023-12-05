@@ -1,8 +1,9 @@
 use axum::{
     async_trait,
     extract::FromRequestParts,
-    http::{StatusCode, request::Parts},
+    http::{request::Parts, StatusCode},
 };
+
 pub struct ParsedPath(pub Vec<i32>);
 
 #[async_trait]
@@ -18,7 +19,12 @@ where
         for segment in req.uri.path().trim_start_matches("/1/").split('/') {
             match segment.parse::<i32>() {
                 Ok(num) => nums.push(num),
-                Err(_) => return Err((StatusCode::BAD_REQUEST, format!("Invalid segment: {}", segment))),
+                Err(_) => {
+                    return Err((
+                        StatusCode::BAD_REQUEST,
+                        format!("Invalid segment: {}", segment),
+                    ))
+                }
             }
         }
 

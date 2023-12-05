@@ -1,5 +1,8 @@
 pub mod handlers;
-pub mod routes;
-pub mod parser;
+mod models;
+mod parser;
+mod routes;
 
+pub use models::{ContestWinners, Reindeer, ReindeerCompetitor};
+pub use parser::ParsedPath;
 pub use routes::app;

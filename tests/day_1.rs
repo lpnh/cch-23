@@ -35,12 +35,7 @@ async fn cube_the_bits_2() {
     let app = app();
 
     let response = app
-        .oneshot(
-            Request::builder()
-                .uri("/1/10")
-                .body(Body::empty())
-                .unwrap(),
-        )
+        .oneshot(Request::builder().uri("/1/10").body(Body::empty()).unwrap())
         .await
         .unwrap();
 

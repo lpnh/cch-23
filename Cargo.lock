@@ -261,6 +261,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.7.1",
  "http-body-util",
+ "serde",
  "shuttle-axum",
  "shuttle-runtime",
  "tokio",
