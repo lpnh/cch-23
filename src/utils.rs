@@ -51,7 +51,7 @@ pub fn count_elves_on_a_shelf(input: &str) -> usize {
         if input[end..].starts_with("shelf") {
             count += 1;
         }
-        start_search = end; // Continue searching from the end of "elf on a "
+        start_search = end;
     }
 
     count
