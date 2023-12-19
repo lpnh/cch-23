@@ -32,7 +32,7 @@ impl ContestWinners {
         let fastest = get_fastest(&contest);
         let tallest = get_tallest(&contest);
         let magician = get_magician(&contest);
-        let consumer: (String, i32) = get_consumer(&contest);
+        let consumer = get_consumer(&contest);
 
         Self {
             fastest: format!(
@@ -47,69 +47,41 @@ impl ContestWinners {
                 "{} could blast you away with a snow magic power of {}",
                 magician.0, magician.1
             ),
-            consumer: format!("{} ate lots of candies, but also some grass", consumer.0),
+            consumer: format!("{} ate lots of candies, but also some {}",
+                consumer.0, consumer.1
+            ),
         }
     }
 }
 
 fn get_fastest(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    let mut winner_name = "".to_string();
-    let mut winner_strength = 0;
-
     contest
         .iter()
-        .fold((String::default(), 0.0), |acc, competitor| {
-            if competitor.speed > acc.1 {
-                winner_name = competitor.name.clone();
-                winner_strength = competitor.strength;
-                (competitor.name.clone(), competitor.speed)
-            } else {
-                acc
-            }
-        });
-
-    (winner_name, winner_strength)
+        .max_by(|a, b| a.speed.partial_cmp(&b.speed).unwrap())
+        .map(|winner| (winner.name.clone(), winner.strength))
+        .unwrap_or_default()
 }
 
 fn get_tallest(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    let mut winner_name = "".to_string();
-    let mut winner_antler = 0;
-
     contest
         .iter()
-        .fold((String::default(), 0), |acc, competitor| {
-            if competitor.height > acc.1 {
-                winner_name = competitor.name.clone();
-                winner_antler = competitor.antler_width;
-                (competitor.name.clone(), competitor.height)
-            } else {
-                acc
-            }
-        });
-    
-    (winner_name, winner_antler)
+        .max_by(|a, b| a.height.cmp(&b.height))
+        .map(|winner| (winner.name.clone(), winner.antler_width))
+        .unwrap_or_default()
 }
 
 fn get_magician(contest: &[ReindeerCompetitor]) -> (String, i32) {
     contest
         .iter()
-        .fold((String::default(), 0), |acc, competitor| {
-            if competitor.snow_magic_power > acc.1 {
-                (competitor.name.clone(), competitor.snow_magic_power)
-            } else {
-                acc
-            }
-        })
+        .max_by(|a, b| a.snow_magic_power.cmp(&b.snow_magic_power))
+        .map(|winner| (winner.name.clone(), winner.snow_magic_power))
+        .unwrap_or_default()
 }
 
-fn get_consumer(contest: &[ReindeerCompetitor]) -> (String, i32) {
+fn get_consumer(contest: &[ReindeerCompetitor]) -> (String, String) {
     contest
         .iter()
-        .fold((String::default(), 0), |acc, competitor| {
-            if competitor.candies_eaten_yesterday > acc.1 {
-                (competitor.name.clone(), competitor.candies_eaten_yesterday)
-            } else {
-                acc
-            }
-        })
+        .max_by(|a, b| a.candies_eaten_yesterday.cmp(&b.candies_eaten_yesterday))
+        .map(|winner| (winner.name.clone(), winner.favorite_food.clone()))
+        .unwrap_or_default()
 }

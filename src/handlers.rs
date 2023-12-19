@@ -1,6 +1,7 @@
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
+use serde_json::to_string_pretty;
 
 use crate::ParsedPath;
 use crate::{ContestWinners, Reindeer, ReindeerCompetitor};
@@ -44,6 +45,7 @@ pub async fn reindeers_contest(
 ) -> impl IntoResponse {
     let status = StatusCode::OK;
     let body = ContestWinners::result(reindeer_competitors);
+    let pretty_body = to_string_pretty(&body).unwrap();
 
-    (status, Json(body))
+    (status, pretty_body)
 }
