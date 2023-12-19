@@ -15,4 +15,6 @@ pub fn app() -> Router {
         // Day 4
         .route("/4/strength", post(reindeers))
         .route("/4/contest", post(reindeers_contest))
+        // Day 6
+        .route("/6", post(get_elves_and_shelves))
 }

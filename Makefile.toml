@@ -1,0 +1,3 @@
+[tasks.run-dev]
+command = "cargo"
+args = ["watch", "-qcx", "shuttle run"]

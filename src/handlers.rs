@@ -4,7 +4,7 @@ use axum::Json;
 use serde_json::to_string_pretty;
 
 use crate::ParsedPath;
-use crate::{ContestWinners, Reindeer, ReindeerCompetitor};
+use crate::models::*;
 
 // Day -1
 pub async fn home() -> &'static str {
@@ -48,4 +48,14 @@ pub async fn reindeers_contest(
     let pretty_body = to_string_pretty(&body).unwrap();
 
     (status, pretty_body)
+}
+
+// Day 6
+pub async fn get_elves_and_shelves(input: String) -> impl IntoResponse {
+    let response = ShelvesAndElves::new(&input);
+
+    let status = StatusCode::OK;
+    let body = response;
+
+    (status, body)
 }

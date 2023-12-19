@@ -1,4 +1,7 @@
 use serde::{Deserialize, Serialize};
+use axum::Json;
+
+use crate::utils::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct Reindeer {
@@ -9,14 +12,14 @@ pub struct Reindeer {
 #[derive(Serialize, Deserialize)]
 pub struct ReindeerCompetitor {
     pub name: String,
-    strength: i32,
-    speed: f32,
-    height: i32,
-    antler_width: i32,
-    snow_magic_power: i32,
-    favorite_food: String,
+    pub strength: i32,
+    pub speed: f32,
+    pub height: i32,
+    pub antler_width: i32,
+    pub snow_magic_power: i32,
+    pub favorite_food: String,
     #[serde(rename = "cAnD13s_3ATeN-yesT3rdAy")]
-    candies_eaten_yesterday: i32,
+    pub candies_eaten_yesterday: i32,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -54,34 +57,36 @@ impl ContestWinners {
     }
 }
 
-fn get_fastest(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    contest
-        .iter()
-        .max_by(|a, b| a.speed.partial_cmp(&b.speed).unwrap())
-        .map(|winner| (winner.name.clone(), winner.strength))
-        .unwrap_or_default()
+#[derive(Serialize, Deserialize)]
+pub struct Shelf {
+    elf: usize
 }
 
-fn get_tallest(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    contest
-        .iter()
-        .max_by(|a, b| a.height.cmp(&b.height))
-        .map(|winner| (winner.name.clone(), winner.antler_width))
-        .unwrap_or_default()
+impl Shelf {
+    pub fn new(request: &str) -> Json<Shelf> {
+        Json(
+           Self { elf: count_elves(request) }
+        )   
+    }
 }
 
-fn get_magician(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    contest
-        .iter()
-        .max_by(|a, b| a.snow_magic_power.cmp(&b.snow_magic_power))
-        .map(|winner| (winner.name.clone(), winner.snow_magic_power))
-        .unwrap_or_default()
+#[derive(Serialize, Deserialize)]
+pub struct ShelvesAndElves {
+    elf: usize,
+    #[serde(rename = "elf on a shelf")]
+    elf_on_a_shelf: usize,
+    #[serde(rename = "shelf with no elf on it")]
+    shelves_with_no_elf: usize,
 }
 
-fn get_consumer(contest: &[ReindeerCompetitor]) -> (String, String) {
-    contest
-        .iter()
-        .max_by(|a, b| a.candies_eaten_yesterday.cmp(&b.candies_eaten_yesterday))
-        .map(|winner| (winner.name.clone(), winner.favorite_food.clone()))
-        .unwrap_or_default()
+impl ShelvesAndElves {
+    pub fn new(request: &str) -> Json<ShelvesAndElves> {
+        Json(
+            Self {
+                elf: count_elves(request),
+                elf_on_a_shelf: count_elves_on_a_shelf(request),
+                shelves_with_no_elf: count_shelves_with_no_elf(request)
+            }
+        )
+    }
 }
