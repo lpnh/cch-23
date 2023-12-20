@@ -1,11 +1,11 @@
 use axum::http::{header, StatusCode, HeaderMap};
 use axum::response::IntoResponse;
 use axum::Json;
-use base64::prelude::*;
-use serde_json::{json, to_string_pretty};
+use serde_json::to_string_pretty;
 
 use crate::ParsedPath;
 use crate::models::*;
+use crate::utils::decode_recipe;
 
 // Day -1
 pub async fn home() -> &'static str {
@@ -65,13 +65,8 @@ pub async fn get_elves_and_shelves(input: String) -> impl IntoResponse {
 pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
     if let Some(cookie) = header.get(header::COOKIE) {
         let cookie_str = cookie.to_str().unwrap();
+        let response = decode_recipe(cookie_str);
 
-        let encoded_recipe = cookie_str.split_once('=').unwrap().1;
-
-        let eng = BASE64_STANDARD;
-        let decoded_cookie = eng.decode(encoded_recipe).unwrap();
-
-        let response = String::from_utf8(decoded_cookie).unwrap();
         let status = StatusCode::OK;
 
         return (status, response)
@@ -80,4 +75,18 @@ pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
     let status = StatusCode::INTERNAL_SERVER_ERROR;
 
     (status, "No cookie found".into())
+}
+
+pub async fn bake_cookies(header: HeaderMap) -> impl IntoResponse {
+    let cookie = header.get(header::COOKIE).unwrap();
+    let cookie_str = cookie.to_str().unwrap();
+    let recipe_json = decode_recipe(cookie_str);
+
+    let recipe_and_pantry: RecipeAndPantry = serde_json::from_str(&recipe_json).unwrap();
+
+    let response = CookiesAndPantry::bake(recipe_and_pantry);
+
+    let status = StatusCode::OK;
+
+    (status, response)
 }

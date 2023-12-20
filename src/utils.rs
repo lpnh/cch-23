@@ -1,38 +1,47 @@
-use crate::models::ReindeerCompetitor;
-
+use base64::prelude::*;
 use regex::Regex;
 
+use crate::models::ReindeerCompetitor;
+
 // Day 4
-pub fn get_fastest(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    contest
+pub fn get_fastest(contest: &[ReindeerCompetitor]) -> String {
+    let res = contest
         .iter()
         .max_by(|a, b| a.speed.partial_cmp(&b.speed).unwrap())
         .map(|winner| (winner.name.clone(), winner.strength))
-        .unwrap_or_default()
+        .unwrap_or_default();
+
+    format!("Speeding past the finish line with a strength of {} is {}", res.1, res.0)
 }
 
-pub fn get_tallest(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    contest
+pub fn get_tallest(contest: &[ReindeerCompetitor]) -> String {
+    let res = contest
         .iter()
         .max_by(|a, b| a.height.cmp(&b.height))
         .map(|winner| (winner.name.clone(), winner.antler_width))
-        .unwrap_or_default()
+        .unwrap_or_default();
+
+    format!("{} is standing tall with his {} cm wide antlers", res.0, res.1)
 }
 
-pub fn get_magician(contest: &[ReindeerCompetitor]) -> (String, i32) {
-    contest
+pub fn get_magician(contest: &[ReindeerCompetitor]) -> String {
+    let res = contest
         .iter()
         .max_by(|a, b| a.snow_magic_power.cmp(&b.snow_magic_power))
         .map(|winner| (winner.name.clone(), winner.snow_magic_power))
-        .unwrap_or_default()
+        .unwrap_or_default();
+
+    format!("{} could blast you away with a snow magic power of {}", res.0, res.1)
 }
 
-pub fn get_consumer(contest: &[ReindeerCompetitor]) -> (String, String) {
-    contest
+pub fn get_consumer(contest: &[ReindeerCompetitor]) -> String {
+    let res = contest
         .iter()
         .max_by(|a, b| a.candies_eaten_yesterday.cmp(&b.candies_eaten_yesterday))
         .map(|winner| (winner.name.clone(), winner.favorite_food.clone()))
-        .unwrap_or_default()
+        .unwrap_or_default();
+
+    format!("{} ate lots of candies, but also some {}", res.0, res.1)
 }
 
 // Day 6
@@ -72,4 +81,37 @@ pub fn count_shelves_with_no_elf(input: &str) -> usize {
             &input[start - elf_on_a_shelf.len()..start] != elf_on_a_shelf
         })
         .count()
+}
+
+// Day 7
+pub fn decode_recipe(input: &str) -> String {
+    let encoded_recipe = input.split_once('=').unwrap().1;
+
+    let eng = BASE64_STANDARD;
+    let decoded_cookie = eng.decode(encoded_recipe).unwrap();
+
+    String::from_utf8(decoded_cookie).unwrap()
+}
+
+
+pub fn min_element(dividend: [u32; 5], divisor: [u32; 5]) -> Option<u32> {
+    let results = [
+        dividend[0].checked_div(divisor[0]),
+        dividend[1].checked_div(divisor[1]),
+        dividend[2].checked_div(divisor[2]),
+        dividend[3].checked_div(divisor[3]),
+        dividend[4].checked_div(divisor[4]),
+    ];
+
+    results.iter().filter_map(|&x| x).min()
+}
+
+pub fn find_reminder(dividend: [u32; 5], divisor: [u32; 5], quotient: u32) -> [u32; 5] {
+    [
+        dividend[0] - (divisor[0] * quotient),
+        dividend[1] - (divisor[1] * quotient),
+        dividend[2] - (divisor[2] * quotient),
+        dividend[3] - (divisor[3] * quotient),
+        dividend[4] - (divisor[4] * quotient),
+    ]
 }

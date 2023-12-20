@@ -32,27 +32,11 @@ pub struct ContestWinners {
 
 impl ContestWinners {
     pub fn result(contest: Vec<ReindeerCompetitor>) -> Self {
-        let fastest = get_fastest(&contest);
-        let tallest = get_tallest(&contest);
-        let magician = get_magician(&contest);
-        let consumer = get_consumer(&contest);
-
         Self {
-            fastest: format!(
-                "Speeding past the finish line with a strength of {} is {}",
-                fastest.1, fastest.0
-            ),
-            tallest: format!(
-                "{} is standing tall with his {} cm wide antlers",
-                tallest.0, tallest.1
-            ),
-            magician: format!(
-                "{} could blast you away with a snow magic power of {}",
-                magician.0, magician.1
-            ),
-            consumer: format!("{} ate lots of candies, but also some {}",
-                consumer.0, consumer.1
-            ),
+            fastest: get_fastest(&contest),
+            tallest: get_tallest(&contest),
+            magician: get_magician(&contest),
+            consumer: get_consumer(&contest),
         }
     }
 }
@@ -86,6 +70,70 @@ impl ShelvesAndElves {
                 elf: count_elves(request),
                 elf_on_a_shelf: count_elves_on_a_shelf(request),
                 shelves_with_no_elf: count_shelves_with_no_elf(request)
+            }
+        )
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Ingredients {
+    flour: u32,
+    sugar: u32,
+    butter: u32,
+    #[serde(rename = "baking powder")]
+    baking_powder: u32,
+    #[serde(rename = "chocolate chips")]
+    chocolate_chips: u32,
+}
+
+impl Ingredients {
+    fn to_array(&self) -> [u32; 5] {
+        [
+            self.flour,
+            self.sugar,
+            self.butter,
+            self.baking_powder,
+            self.chocolate_chips
+        ]
+    }
+
+    pub fn from_array(array: [u32; 5]) -> Self {
+        Self {
+            flour: array[0],
+            sugar: array[1],
+            butter: array[2],
+            baking_powder: array[3],
+            chocolate_chips: array[4],
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RecipeAndPantry {
+    recipe: Ingredients,
+    pantry: Ingredients,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CookiesAndPantry {
+    cookies: u32,
+    pantry: Ingredients,
+}
+
+impl CookiesAndPantry {
+    pub fn bake(recipe_and_pantry: RecipeAndPantry) -> Json<Self> {
+        let dividend = recipe_and_pantry.pantry.to_array();
+        let divisor = recipe_and_pantry.recipe.to_array();
+        
+        let cookies = min_element(dividend, divisor).unwrap();
+        let pantry_array = find_reminder(dividend, divisor, cookies);
+
+        let pantry = Ingredients::from_array(pantry_array);
+
+        Json (
+            Self {
+                cookies,
+                pantry
             }
         )
     }

@@ -19,4 +19,5 @@ pub fn app() -> Router {
         .route("/6", post(get_elves_and_shelves))
         // Day 7
         .route("/7/decode", get(recipe))
+        .route("/7/bake", get(bake_cookies))
 }
