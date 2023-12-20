@@ -5,7 +5,7 @@ use serde_json::to_string_pretty;
 
 use crate::ParsedPath;
 use crate::models::*;
-use crate::utils::decode_recipe;
+use crate::utils::day_7;
 
 // Day -1
 pub async fn home() -> &'static str {
@@ -65,7 +65,7 @@ pub async fn get_elves_and_shelves(input: String) -> impl IntoResponse {
 pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
     if let Some(cookie) = header.get(header::COOKIE) {
         let cookie_str = cookie.to_str().unwrap();
-        let response = decode_recipe(cookie_str);
+        let response = day_7::decode_recipe(cookie_str);
 
         let status = StatusCode::OK;
 
@@ -80,11 +80,10 @@ pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
 pub async fn bake_cookies(header: HeaderMap) -> impl IntoResponse {
     let cookie = header.get(header::COOKIE).unwrap();
     let cookie_str = cookie.to_str().unwrap();
-    let recipe_json = decode_recipe(cookie_str);
 
-    let recipe_and_pantry = serde_json::from_str(&recipe_json).unwrap();
+    let recipe_json = day_7::decode_recipe(cookie_str);
 
-    let response = CookiesAndPantry::bake(recipe_and_pantry);
+    let response = CookiesAndPantry::from_recipe(&recipe_json);
 
     let status = StatusCode::OK;
 

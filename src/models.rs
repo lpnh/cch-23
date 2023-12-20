@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use axum::Json;
+use std::collections::HashMap;
 
 use crate::utils::*;
 
@@ -33,10 +34,10 @@ pub struct ContestWinners {
 impl ContestWinners {
     pub fn result(contest: Vec<ReindeerCompetitor>) -> Self {
         Self {
-            fastest: get_fastest(&contest),
-            tallest: get_tallest(&contest),
-            magician: get_magician(&contest),
-            consumer: get_consumer(&contest),
+            fastest: day_4::get_fastest(&contest),
+            tallest: day_4::get_tallest(&contest),
+            magician: day_4::get_magician(&contest),
+            consumer: day_4::get_consumer(&contest),
         }
     }
 }
@@ -49,7 +50,7 @@ pub struct Shelf {
 impl Shelf {
     pub fn new(request: &str) -> Json<Shelf> {
         Json(
-           Self { elf: count_elves(request) }
+           Self { elf: day_6::count_elves(request) }
         )   
     }
 }
@@ -67,73 +68,34 @@ impl ShelvesAndElves {
     pub fn new(request: &str) -> Json<ShelvesAndElves> {
         Json(
             Self {
-                elf: count_elves(request),
-                elf_on_a_shelf: count_elves_on_a_shelf(request),
-                shelves_with_no_elf: count_shelves_with_no_elf(request)
+                elf: day_6::count_elves(request),
+                elf_on_a_shelf: day_6::count_elves_on_a_shelf(request),
+                shelves_with_no_elf: day_6::count_shelves_with_no_elf(request)
             }
         )
     }
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Ingredients {
-    flour: i64,
-    sugar: i64,
-    butter: i64,
-    #[serde(rename = "baking powder")]
-    baking_powder: i64,
-    #[serde(rename = "chocolate chips")]
-    chocolate_chips: i64,
-}
-
-impl Ingredients {
-    fn to_array(&self) -> [i64; 5] {
-        [
-            self.flour,
-            self.sugar,
-            self.butter,
-            self.baking_powder,
-            self.chocolate_chips
-        ]
-    }
-
-    pub fn from_array(array: [i64; 5]) -> Self {
-        Self {
-            flour: array[0],
-            sugar: array[1],
-            butter: array[2],
-            baking_powder: array[3],
-            chocolate_chips: array[4],
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct RecipeAndPantry {
-    recipe: Ingredients,
-    pantry: Ingredients,
+    pub recipe: HashMap<String, i64>,
+    pub pantry: HashMap<String, i64>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CookiesAndPantry {
-    cookies: i64,
-    pantry: Ingredients,
+    pub cookies: i64,
+    pub pantry: HashMap<String, i64>,
 }
 
 impl CookiesAndPantry {
-    pub fn bake(recipe_and_pantry: RecipeAndPantry) -> Json<Self> {
-        let dividend = recipe_and_pantry.pantry.to_array();
-        let divisor = recipe_and_pantry.recipe.to_array();
+    pub fn from_recipe(recipe: &str) -> Json<Self> {
+        let cookies_and_pantry = day_7::bake(recipe).unwrap();
         
-        let cookies = min_element(dividend, divisor).unwrap();
-        let pantry_array = find_reminder(dividend, divisor, cookies);
-
-        let pantry = Ingredients::from_array(pantry_array);
-
-        Json (
+        Json(
             Self {
-                cookies,
-                pantry
+                cookies: cookies_and_pantry.0,
+                pantry: cookies_and_pantry.1,
             }
         )
     }
