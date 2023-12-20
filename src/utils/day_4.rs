@@ -1,6 +1,5 @@
 use crate::models::ReindeerCompetitor;
 
-// Day 4
 pub fn get_fastest(contest: &[ReindeerCompetitor]) -> String {
     let res = contest
         .iter()
