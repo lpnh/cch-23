@@ -17,4 +17,6 @@ pub fn app() -> Router {
         .route("/4/contest", post(reindeers_contest))
         // Day 6
         .route("/6", post(get_elves_and_shelves))
+        // Day 7
+        .route("/7/decode", get(recipe))
 }

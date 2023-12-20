@@ -1,7 +1,8 @@
-use axum::http::StatusCode;
+use axum::http::{header, StatusCode, HeaderMap};
 use axum::response::IntoResponse;
 use axum::Json;
-use serde_json::to_string_pretty;
+use base64::prelude::*;
+use serde_json::{json, to_string_pretty};
 
 use crate::ParsedPath;
 use crate::models::*;
@@ -58,4 +59,25 @@ pub async fn get_elves_and_shelves(input: String) -> impl IntoResponse {
     let body = response;
 
     (status, body)
+}
+
+// Day 7
+pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
+    if let Some(cookie) = header.get(header::COOKIE) {
+        let cookie_str = cookie.to_str().unwrap();
+
+        let encoded_recipe = cookie_str.split_once('=').unwrap().1;
+
+        let eng = BASE64_STANDARD;
+        let decoded_cookie = eng.decode(encoded_recipe).unwrap();
+
+        let response = String::from_utf8(decoded_cookie).unwrap();
+        let status = StatusCode::OK;
+
+        return (status, response)
+    }
+
+    let status = StatusCode::INTERNAL_SERVER_ERROR;
+
+    (status, "No cookie found".into())
 }
