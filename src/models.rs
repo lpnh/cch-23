@@ -77,17 +77,17 @@ impl ShelvesAndElves {
 
 #[derive(Serialize, Deserialize)]
 pub struct Ingredients {
-    flour: u32,
-    sugar: u32,
-    butter: u32,
+    flour: i64,
+    sugar: i64,
+    butter: i64,
     #[serde(rename = "baking powder")]
-    baking_powder: u32,
+    baking_powder: i64,
     #[serde(rename = "chocolate chips")]
-    chocolate_chips: u32,
+    chocolate_chips: i64,
 }
 
 impl Ingredients {
-    fn to_array(&self) -> [u32; 5] {
+    fn to_array(&self) -> [i64; 5] {
         [
             self.flour,
             self.sugar,
@@ -97,7 +97,7 @@ impl Ingredients {
         ]
     }
 
-    pub fn from_array(array: [u32; 5]) -> Self {
+    pub fn from_array(array: [i64; 5]) -> Self {
         Self {
             flour: array[0],
             sugar: array[1],
@@ -116,7 +116,7 @@ pub struct RecipeAndPantry {
 
 #[derive(Serialize, Deserialize)]
 pub struct CookiesAndPantry {
-    cookies: u32,
+    cookies: i64,
     pantry: Ingredients,
 }
 

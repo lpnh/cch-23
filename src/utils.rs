@@ -94,7 +94,7 @@ pub fn decode_recipe(input: &str) -> String {
 }
 
 
-pub fn min_element(dividend: [u32; 5], divisor: [u32; 5]) -> Option<u32> {
+pub fn min_element(dividend: [i64; 5], divisor: [i64; 5]) -> Option<i64> {
     let results = [
         dividend[0].checked_div(divisor[0]),
         dividend[1].checked_div(divisor[1]),
@@ -106,7 +106,7 @@ pub fn min_element(dividend: [u32; 5], divisor: [u32; 5]) -> Option<u32> {
     results.iter().filter_map(|&x| x).min()
 }
 
-pub fn find_reminder(dividend: [u32; 5], divisor: [u32; 5], quotient: u32) -> [u32; 5] {
+pub fn find_reminder(dividend: [i64; 5], divisor: [i64; 5], quotient: i64) -> [i64; 5] {
     [
         dividend[0] - (divisor[0] * quotient),
         dividend[1] - (divisor[1] * quotient),

@@ -82,7 +82,7 @@ pub async fn bake_cookies(header: HeaderMap) -> impl IntoResponse {
     let cookie_str = cookie.to_str().unwrap();
     let recipe_json = decode_recipe(cookie_str);
 
-    let recipe_and_pantry: RecipeAndPantry = serde_json::from_str(&recipe_json).unwrap();
+    let recipe_and_pantry = serde_json::from_str(&recipe_json).unwrap();
 
     let response = CookiesAndPantry::bake(recipe_and_pantry);
 
