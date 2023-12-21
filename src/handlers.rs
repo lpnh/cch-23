@@ -1,13 +1,13 @@
-use axum::http::{header, StatusCode, HeaderMap, Response};
+use axum::extract::Path;
+use axum::http::{header, HeaderMap, Response, StatusCode};
 use axum::response::IntoResponse;
 use axum::Json;
-use axum::extract::Path;
 use serde_json::to_string_pretty;
 
-use crate::ParsedPath;
 use crate::models::*;
 use crate::utils::day_7;
 use crate::utils::day_8::get_pokemon_weight;
+use crate::ParsedPath;
 
 // Day -1
 pub async fn home() -> &'static str {
@@ -62,7 +62,7 @@ pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
         let cookie_str = cookie.to_str().unwrap();
         let response = day_7::decode_recipe(cookie_str);
 
-        return (StatusCode::OK, response)
+        return (StatusCode::OK, response);
     }
 
     let status = StatusCode::INTERNAL_SERVER_ERROR;

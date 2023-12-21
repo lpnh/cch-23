@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use axum::Json;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::utils::*;
@@ -44,14 +44,14 @@ impl ContestWinners {
 
 #[derive(Serialize, Deserialize)]
 pub struct Shelf {
-    elf: usize
+    elf: usize,
 }
 
 impl Shelf {
     pub fn new(request: &str) -> Json<Shelf> {
-        Json(
-           Self { elf: day_6::count_elves(request) }
-        )   
+        Json(Self {
+            elf: day_6::count_elves(request),
+        })
     }
 }
 
@@ -66,13 +66,11 @@ pub struct ShelvesAndElves {
 
 impl ShelvesAndElves {
     pub fn new(request: &str) -> Json<ShelvesAndElves> {
-        Json(
-            Self {
-                elf: day_6::count_elves(request),
-                elf_on_a_shelf: day_6::count_elves_on_a_shelf(request),
-                shelves_with_no_elf: day_6::count_shelves_with_no_elf(request)
-            }
-        )
+        Json(Self {
+            elf: day_6::count_elves(request),
+            elf_on_a_shelf: day_6::count_elves_on_a_shelf(request),
+            shelves_with_no_elf: day_6::count_shelves_with_no_elf(request),
+        })
     }
 }
 
@@ -91,12 +89,10 @@ pub struct CookiesAndPantry {
 impl CookiesAndPantry {
     pub fn from_recipe(recipe: &str) -> Json<Self> {
         let cookies_and_pantry = day_7::bake(recipe).unwrap();
-        
-        Json(
-            Self {
-                cookies: cookies_and_pantry.0,
-                pantry: cookies_and_pantry.1,
-            }
-        )
+
+        Json(Self {
+            cookies: cookies_and_pantry.0,
+            pantry: cookies_and_pantry.1,
+        })
     }
 }

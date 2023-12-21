@@ -7,7 +7,10 @@ pub fn get_fastest(contest: &[ReindeerCompetitor]) -> String {
         .map(|winner| (winner.name.clone(), winner.strength))
         .unwrap_or_default();
 
-    format!("Speeding past the finish line with a strength of {} is {}", res.1, res.0)
+    format!(
+        "Speeding past the finish line with a strength of {} is {}",
+        res.1, res.0
+    )
 }
 
 pub fn get_tallest(contest: &[ReindeerCompetitor]) -> String {
@@ -17,7 +20,10 @@ pub fn get_tallest(contest: &[ReindeerCompetitor]) -> String {
         .map(|winner| (winner.name.clone(), winner.antler_width))
         .unwrap_or_default();
 
-    format!("{} is standing tall with his {} cm wide antlers", res.0, res.1)
+    format!(
+        "{} is standing tall with his {} cm wide antlers",
+        res.0, res.1
+    )
 }
 
 pub fn get_magician(contest: &[ReindeerCompetitor]) -> String {
@@ -27,7 +33,10 @@ pub fn get_magician(contest: &[ReindeerCompetitor]) -> String {
         .map(|winner| (winner.name.clone(), winner.snow_magic_power))
         .unwrap_or_default();
 
-    format!("{} could blast you away with a snow magic power of {}", res.0, res.1)
+    format!(
+        "{} could blast you away with a snow magic power of {}",
+        res.0, res.1
+    )
 }
 
 pub fn get_consumer(contest: &[ReindeerCompetitor]) -> String {

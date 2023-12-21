@@ -25,7 +25,8 @@ pub fn count_shelves_with_no_elf(input: &str) -> usize {
     let shelf_regex = Regex::new(r"shelf").unwrap();
     let elf_on_a_shelf = "elf on a ";
 
-    shelf_regex.find_iter(input)
+    shelf_regex
+        .find_iter(input)
         .filter(|mat| {
             let start = mat.start();
 
