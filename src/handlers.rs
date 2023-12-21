@@ -1,7 +1,10 @@
-use axum::http::{header, StatusCode, HeaderMap};
+use axum::http::{header, StatusCode, HeaderMap, Response};
 use axum::response::IntoResponse;
 use axum::Json;
+use axum::extract::Path;
 use serde_json::to_string_pretty;
+use rustemon::model::pokemon::Pokemon;
+use tracing::{info, error};
 
 use crate::ParsedPath;
 use crate::models::*;
@@ -21,44 +24,37 @@ pub async fn fake_error() -> impl IntoResponse {
 
 // Day 1
 pub async fn cube_the_bits(ParsedPath(packets): ParsedPath) -> impl IntoResponse {
-    let status = StatusCode::OK;
-
     let xor_result = packets.iter().fold(0, |acc, &x| acc ^ x);
     let cubed_result = xor_result.pow(3);
     let body = cubed_result.to_string();
 
-    (status, body)
+    (StatusCode::OK, body)
 }
 
 // Day 4
 pub async fn reindeers(Json(reindeers): Json<Vec<Reindeer>>) -> impl IntoResponse {
-    let status = StatusCode::OK;
     let body = reindeers
         .iter()
         .fold(0, |acc, r| acc + r.strength)
         .to_string();
 
-    (status, body)
+    (StatusCode::OK, body)
 }
 
 pub async fn reindeers_contest(
     Json(reindeer_competitors): Json<Vec<ReindeerCompetitor>>,
 ) -> impl IntoResponse {
-    let status = StatusCode::OK;
     let body = ContestWinners::result(reindeer_competitors);
     let pretty_body = to_string_pretty(&body).unwrap();
 
-    (status, pretty_body)
+    (StatusCode::OK, pretty_body)
 }
 
 // Day 6
 pub async fn get_elves_and_shelves(input: String) -> impl IntoResponse {
     let response = ShelvesAndElves::new(&input);
 
-    let status = StatusCode::OK;
-    let body = response;
-
-    (status, body)
+    (StatusCode::OK, response)
 }
 
 // Day 7
@@ -67,9 +63,7 @@ pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
         let cookie_str = cookie.to_str().unwrap();
         let response = day_7::decode_recipe(cookie_str);
 
-        let status = StatusCode::OK;
-
-        return (status, response)
+        return (StatusCode::OK, response)
     }
 
     let status = StatusCode::INTERNAL_SERVER_ERROR;
@@ -77,7 +71,7 @@ pub async fn recipe(header: HeaderMap) -> impl IntoResponse {
     (status, "No cookie found".into())
 }
 
-pub async fn bake_cookies(header: HeaderMap) -> impl IntoResponse {
+pub async fn baked_cookies(header: HeaderMap) -> impl IntoResponse {
     let cookie = header.get(header::COOKIE).unwrap();
     let cookie_str = cookie.to_str().unwrap();
 
@@ -85,7 +79,40 @@ pub async fn bake_cookies(header: HeaderMap) -> impl IntoResponse {
 
     let response = CookiesAndPantry::from_recipe(&recipe_json);
 
-    let status = StatusCode::OK;
+    (StatusCode::OK, response)
+}
 
-    (status, response)
+// Day 8
+pub async fn pokemon_weight(Path(id): Path<i64>) -> impl IntoResponse {
+    info!(id);
+
+    let poke_api_url = format!("https://pokeapi.co/api/v2/pokemon/{}/", id);
+
+    match reqwest::get(&poke_api_url).await {
+        Ok(api_response) => match api_response.json::<Pokemon>().await {
+            Ok(pokemon) => {
+                let pokemon_weight_kg = (pokemon.weight as f64 / 10.0).to_string();
+                info!("Pokemon weight: {}", pokemon_weight_kg);
+                Response::builder()
+                    .status(StatusCode::OK)
+                    .header("Content-Type", "text/plain")
+                    .body(pokemon_weight_kg)
+                    .unwrap()
+            },
+            Err(e) => {
+                error!("Error parsing data: {}", e);
+                Response::builder()
+                    .status(StatusCode::INTERNAL_SERVER_ERROR)
+                    .body("Error".into())
+                    .unwrap()
+            },
+        },
+        Err(e) => {
+            error!("Error fetching data from PokéAPI: {}", e);
+            Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .body("Error".into())
+                .unwrap()
+        },
+    }
 }
