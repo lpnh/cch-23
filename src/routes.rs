@@ -22,4 +22,5 @@ pub fn app() -> Router {
         .route("/7/bake", get(baked_cookies))
         // Day 8
         .route("/8/weight/:id", get(pokemon_weight))
+        .route("/8/drop/:id", get(pokemon_momentum))
 }

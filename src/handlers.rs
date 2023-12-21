@@ -3,12 +3,11 @@ use axum::response::IntoResponse;
 use axum::Json;
 use axum::extract::Path;
 use serde_json::to_string_pretty;
-use rustemon::model::pokemon::Pokemon;
-use tracing::{info, error};
 
 use crate::ParsedPath;
 use crate::models::*;
 use crate::utils::day_7;
+use crate::utils::day_8::get_pokemon_weight;
 
 // Day -1
 pub async fn home() -> &'static str {
@@ -83,36 +82,35 @@ pub async fn baked_cookies(header: HeaderMap) -> impl IntoResponse {
 }
 
 // Day 8
-pub async fn pokemon_weight(Path(id): Path<i64>) -> impl IntoResponse {
-    info!(id);
+pub async fn pokemon_weight(Path(id): Path<u32>) -> impl IntoResponse {
+    let pokemon_weight_kg = get_pokemon_weight(id).await;
 
-    let poke_api_url = format!("https://pokeapi.co/api/v2/pokemon/{}/", id);
+    let pokemon_weight_to_string = pokemon_weight_kg.to_string();
 
-    match reqwest::get(&poke_api_url).await {
-        Ok(api_response) => match api_response.json::<Pokemon>().await {
-            Ok(pokemon) => {
-                let pokemon_weight_kg = (pokemon.weight as f64 / 10.0).to_string();
-                info!("Pokemon weight: {}", pokemon_weight_kg);
-                Response::builder()
-                    .status(StatusCode::OK)
-                    .header("Content-Type", "text/plain")
-                    .body(pokemon_weight_kg)
-                    .unwrap()
-            },
-            Err(e) => {
-                error!("Error parsing data: {}", e);
-                Response::builder()
-                    .status(StatusCode::INTERNAL_SERVER_ERROR)
-                    .body("Error".into())
-                    .unwrap()
-            },
-        },
-        Err(e) => {
-            error!("Error fetching data from PokéAPI: {}", e);
-            Response::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .body("Error".into())
-                .unwrap()
-        },
-    }
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "text/plain")
+        .body(pokemon_weight_to_string)
+        .unwrap()
+}
+
+pub async fn pokemon_momentum(Path(id): Path<u32>) -> impl IntoResponse {
+    let pokemon_weight_kg = get_pokemon_weight(id).await;
+
+    // S = vt + 1/2 * (at^2)
+    // 10 = 0 + 1/2 * (9.825 * t^2)
+    // t = sqrt(20/9.825)
+
+    // v = v0 + at
+    // v = 0 + 9.825 * sqrt(20/9.825)
+
+    let pokemon_momentum_newton_sec = pokemon_weight_kg * 9.825 * f64::sqrt(20.0 / 9.825);
+
+    let pokemon_momentum_to_string = pokemon_momentum_newton_sec.to_string();
+
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "text/plain")
+        .body(pokemon_momentum_to_string)
+        .unwrap()
 }
